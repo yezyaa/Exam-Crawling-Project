@@ -140,7 +140,7 @@ def extract_correct_answer(question):
         if correct_answer[0].isdigit():
             return correct_answer[0]
     # 모든 요소를 검토했으나 정답을 찾지 못한 경우
-    return "정답 X"
+    return ""
 
 # 해설 추출 함수
 def extract_explanation(question):
@@ -170,7 +170,7 @@ def extract_question(question):
 
     # 출처
     ref_elem = question.find('span', class_='ref')
-    reference = ref_elem.get_text(strip=True) if ref_elem else "출처 X"
+    reference = ref_elem.get_text(strip=True) if ref_elem else ""
 
     # 지문
     # print("\n지문")
@@ -245,7 +245,7 @@ def extract_question(question):
 
     # 데이터프레임 생성 및 엑셀 파일로 저장
     df = pd.DataFrame(all_questions, columns=['번호', '문제', '지문', '보기', '정답', '해설'])
-    clean_reference = re.sub(r'[()]', '', reference).strip()
+    clean_reference = re.sub(r'[()/]', '', reference).strip()
 
     # 상위 폴더인 'result' 안에 새로운 폴더 생성
     result_folder = "result"
@@ -274,7 +274,7 @@ def download_image(img_url, question_number, reference, is_explanation=False, is
             print(f"{reference} 지원하지 않는 파일 확장자: {file_extension}")
             return  # 이 경우, 이미지 다운로드를 수행하지 않음
 
-        clean_reference = re.sub(r'[()]', '', reference).strip()
+        clean_reference = re.sub(r'[()/]', '', reference).strip()
         directory_path = os.path.join("result", clean_reference, "images", "해설" if is_explanation else "")
         if is_choices:
             directory_path = os.path.join(directory_path, "보기")
@@ -324,10 +324,6 @@ def download_image(img_url, question_number, reference, is_explanation=False, is
 # URL 설정
 base_url = 'https://eduon.com/'
 urls = [
-    # 'https://eduon.com/itembank/itemlist/11/777/',
-    # 'https://eduon.com/itembank/itemlist/19/833/',
-    # 'https://eduon.com/itembank/itemlist/11/783/',
-    'https://eduon.com/itembank/itemlist/48/949'
     ] # 임의 배열
 
 for url in urls:
