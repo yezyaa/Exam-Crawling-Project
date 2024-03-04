@@ -2,8 +2,8 @@ import pandas as pd
 import os
 
 # 결과 저장 폴더 및 소스 엑셀 파일 경로 설정
-source_folder = 'C:/Users/young/yezy/eduon-crawling/result/2-2. 목표시험구분2 분류 - 과목 포함 - 시험 합치기'
-output_folder = 'C:/Users/young/yezy/eduon-crawling/result/2-4. 목표시험구분2 분류 - 과목 포함 - 시험별 과목 분류'
+source_folder = 'C:/Users/young/yezy/eduon-crawling/result/2-2. 목표시험구분2 분류 - 과목 포함 - 종목 합치기'
+output_folder = 'C:/Users/young/yezy/eduon-crawling/result/2-4. 목표시험구분2 분류 - 과목 포함 - 종목별 과목 분류 최종'
 
 # 결과 저장 폴더 생성 (이미 존재하지 않는 경우)
 if not os.path.exists(output_folder):
@@ -73,5 +73,5 @@ for filename in os.listdir(source_folder):
                 os.makedirs(new_folder, exist_ok=True)
 
             # 파일명 설정 및 저장
-            output_file = os.path.join(new_folder, f'{subject} - {exam_name} 2013~2022 - 이예지.xlsx')
+            output_file = os.path.join(new_folder, f'{exam_name} - {subject} 2013~2022 - 이예지.xlsx')
             subject_df.to_excel(output_file, index=False)
