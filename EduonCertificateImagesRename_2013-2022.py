@@ -1,5 +1,6 @@
 import os
 import openpyxl
+from pathlib import Path
 
 def update_image_names_based_on_excel(target_folder_path):
     for subject_folder in os.listdir(target_folder_path):
@@ -13,25 +14,28 @@ def update_image_names_based_on_excel(target_folder_path):
                     workbook = openpyxl.load_workbook(excel_path)
                     sheet = workbook.active
                     
-                    # images 폴더 내의 이미지 파일 처리
-                    images_folder = os.path.join(subject_path, 'images')
-                    if os.path.exists(images_folder):
-                        for image in os.listdir(images_folder):
-                            image_path = os.path.join(images_folder, image)
-                            image_name, image_ext = os.path.splitext(image)
-                            # 엑셀 파일의 데이터와 비교하기 위한 준비
-                            for row in sheet.iter_rows(min_row=2, values_only=True):
-                                excel_file_name = row[0]  # A열: 파일명
-                                excel_question_number = row[7]  # H열: 문제번호
-                                target_file_name = f"{excel_file_name}_{excel_question_number}"
-                                if image_name == target_file_name:
-                                    # 새로운 파일명 생성: D열_E열_F열_문제번호
-                                    new_image_name = f"{row[3]}_{row[4]}_{row[5]}_{excel_question_number}{image_ext}"
-                                    new_image_path = os.path.join(images_folder, new_image_name)
-                                    os.rename(image_path, new_image_path)
-                                    break  # 일치하는 파일명을 찾았으므로 더 이상의 반복은 필요 없음
-                    workbook.close()
+                    # 이미지 폴더 경로 설정
+                    images_folder_path = os.path.join(subject_path, 'images')
+                    if not os.path.exists(images_folder_path):
+                        print(f"No images folder found for {subject_folder}")
+                        continue
 
-# 비교할 폴더 경로 설정
+                    # 엑셀 파일 내의 모든 행을 순회하면서 이미지 파일 이름 변경
+                    for row in sheet.iter_rows(min_row=2, values_only=True):
+                        old_name_prefix, question_number, new_prefix = str(row[0]), str(row[7]), f"{row[3]}_{row[4]}_{row[5]}"
+                        # images 폴더 및 하위 폴더 내의 파일 이름 변경
+                        for root, dirs, files in os.walk(images_folder_path):
+                            for filename in files:
+                                if filename.startswith(old_name_prefix) and question_number in filename:
+                                    new_name = filename.replace(old_name_prefix, new_prefix, 1)
+                                    original_path = os.path.join(root, filename)
+                                    new_path = os.path.join(root, new_name)
+                                    try:
+                                        os.rename(original_path, new_path)
+                                        print(f"Renamed {original_path} to {new_path}")
+                                    except Exception as e:
+                                        print(f"Error renaming {original_path} to {new_path}: {e}")
+
+# 최상위 폴더 경로 설정 (예시 경로를 실제 경로로 변경해주세요)
 target_folder_path = 'C:/Users/young/yezy/eduon-crawling/result/2-4. 목표시험구분2 분류 - 과목 포함 - 종목별 과목 분류 최종'
 update_image_names_based_on_excel(target_folder_path)
